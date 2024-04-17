@@ -1,31 +1,18 @@
 from Position import Position
 from Move import Move
+from SuperPiece import Piece
 
-class EmptyField:
-    def __init__(self) -> None:
-        self.color: str | any = None
-        self.position: str | any = None
-        self.moves: str | any = None
-
-    def __repr__(self) -> str:
-        return f"EmptyField()"
-    
-    def __str__(self) -> str:
-        return "Empty"
-
-class Bauer:
+class Pawn(Piece):
     def __init__(self, color: str, position: Position) -> None:
-        self.color: str = color
-        self.position: Position = position
-        self.moves: list[Move] = self.__set_moves()
+        super().__init__(color, position)
 
     def __repr__(self) -> str:
-        return f"Bauer(color = {self.color}, position = {self.position}, moves = {self.moves})"
+        return f"Pawn(color = {self.color}, position = {self.position}, moves = {self.moves})"
         
     def __str__(self) -> str:
-        return "Bauer"
+        return "Pawn"
 
-    def __set_moves(self) -> list[Move]:
+    def _set_moves(self) -> list[Move]:
         moves: list = [
             Move(0, 1),
             Move(0, 2, True)
