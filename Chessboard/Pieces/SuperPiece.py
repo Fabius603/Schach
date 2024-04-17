@@ -1,56 +1,127 @@
 from Position import Position
-from Move import Move
+from Movement import Move, Direction
 from abc import ABC, abstractmethod
 
 class Piece(ABC):
     def __init__(self, color, position) -> None:
         self.color: str = color
-        self.position: str = position
-        self.moves: list[Move] = self._set_moves()
-
-    @abstractmethod
-    def __repr__(self) -> str:
-        return "__repr__ Methode muss noch eingerichtet werden!"
-    
-    @abstractmethod
-    def __str__(self) -> str:
-        return "__str__ Methode muss noch eingerichtet werden!"
-
-    @abstractmethod
-    def _set_moves(self) -> list[Move]:
-        return []
-    
-    @abstractmethod
-    def get_moves() -> list[Move]:
-        return []
-    
-
-class Pawn(Piece):
-    def __init__(self, color: str, position: Position) -> None:
-        super().__init__(color, position)
+        self.position: Position = position
+        self.moves: list[Move | Direction] = self._set_movements()
 
     def __repr__(self) -> str:
-        return f"Pawn(color = {self.color}, position = {self.position}, moves = {self.moves})"
+        return f"{self.__class__.__name__}(color = {self.color}, position = {self.position}, moves = {self.moves})"
         
     def __str__(self) -> str:
-        return "Pawn"
+        return self.__class__.__name__
 
-    def _set_moves(self) -> list[Move]:
-        moves: list = [
-            Move(0, 1),
-            Move(0, 2, True)
-        ]
+    @abstractmethod
+    def _set_movements(self) -> list[Move | Direction]:
+        return []
 
-        if self.color == "black":
-            for i in range(len(moves)):
-                moves[i].y_achse = moves[i].y_achse * -1
-        
-        return moves
-            
-    def get_moves(self) -> list[Position]:
+    def get_moves(self, field) -> list[Position]:
+        from Field import Field
         possible_moves: list[Position] = []
         for move in self.moves:
-            position = Position(self.position.x + move.x_achse, self.position.y + move.y_achse)
+            if isinstance(move, Move):
+                target_position: Position = Position(self.position.x + move.x_achse, self.position.y + move.y_achse)
+                if field.is_move_allowed(target_position, self):
+                    possible_moves.append(target_position)
 
-            possible_moves.append(position)
+            elif isinstance(move, Direction):
+                if move.forward:
+                    for i in range(move.forward_limit):
+                        if(self.color == "white"):
+                            target_position: Position = Position(self.position.x, self.position.y + i + 1)
+                        else:
+                            target_position: Position = Position(self.position.x, self.position.y - i + 1)
+
+                        if field.is_move_allowed(target_position, self):
+                            possible_moves.append(target_position)
+                        else:
+                            break
+                
+                if move.backward:
+                    for i in range(move.backward_limit):
+                        if(self.color == "white"):
+                            target_position: Position = Position(self.position.x, self.position.y - i + 1)
+                        else:
+                            target_position: Position = Position(self.position.x, self.position.y + i + 1)
+
+                        if field.is_move_allowed(target_position, self):
+                            possible_moves.append(target_position)
+                        else:
+                            break
+
+                if move.left:
+                    for i in range(move.left_limit):
+                        if(self.color == "white"):
+                            target_position: Position = Position(self.position.x - i + 1, self.position.y)
+                        else:
+                            target_position: Position = Position(self.position.x + i + 1, self.position.y)
+
+                        if field.is_move_allowed(target_position, self):
+                            possible_moves.append(target_position)
+                        else:
+                            break
+
+                if move.right:
+                    for i in range(move.right_limit):
+                        if(self.color == "white"):
+                            target_position: Position = Position(self.position.x + i + 1, self.position.y)
+                        else:
+                            target_position: Position = Position(self.position.x - i + 1, self.position.y)
+
+                        if field.is_move_allowed(target_position, self):
+                            possible_moves.append(target_position)
+                        else:
+                            break
+
+                if move.leftforward:
+                    for i in range(move.leftforward_limit):
+                        if(self.color == "white"):
+                            target_position: Position = Position(self.position.x + i + 1, self.position.y + i + 1)
+                        else:
+                            target_position: Position = Position(self.position.x - i + 1, self.position.y - i + 1)
+
+                        if field.is_move_allowed(target_position, self):
+                            possible_moves.append(target_position)
+                        else:
+                            break
+
+                if move.rightforward:
+                    for i in range(move.rightforward_limit):
+                        if(self.color == "white"):
+                            target_position: Position = Position(self.position.x - i + 1, self.position.y + i + 1)
+                        else:
+                            target_position: Position = Position(self.position.x + i + 1, self.position.y - i + 1)
+
+                        if field.is_move_allowed(target_position, self):
+                            possible_moves.append(target_position)
+                        else:
+                            break
+                
+                if move.rightbackward:
+                    for i in range(move.rightbackward_limit):
+                        if(self.color == "white"):
+                            target_position: Position = Position(self.position.x - i + 1, self.position.y - i + 1)
+                        else:
+                            target_position: Position = Position(self.position.x + i + 1, self.position.y + i + 1)
+
+                        if field.is_move_allowed(target_position, self):
+                            possible_moves.append(target_position)
+                        else:
+                            break
+
+                if move.leftbackward:
+                    for i in range(move.leftbackward_limit):
+                        if(self.color == "white"):
+                            target_position: Position = Position(self.position.x + i + 1, self.position.y - i + 1)
+                        else:
+                            target_position: Position = Position(self.position.x - i + 1, self.position.y + i + 1)
+
+                        if field.is_move_allowed(target_position, self):
+                            possible_moves.append(target_position)
+                        else:
+                            break
+
         return possible_moves

@@ -1,5 +1,5 @@
-from Chessboard.Pieces.SuperPiece import Piece
-from Move import Move
+from .SuperPiece import Piece
+from Movement import Move, Direction
 
 class EmptyField(Piece):
     def __init__(self, color=None, position=None) -> None:
@@ -11,7 +11,7 @@ class EmptyField(Piece):
     def __str__(self) -> str:
         return "Empty"
     
-    def _set_moves(self) -> list[Move]:
+    def _set_movements(self) -> list[Move | Direction]:
         return []
     
     def get_moves(self) -> list[Move]:
